@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HTML Playground — Canada Capital Computer Computing Coding Club</title>
+  <link rel="stylesheet" href="mystyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #fff;
+      --bg-secondary: #f5f5f5;
+      --bg-tertiary: #f9f9f9;
+      --text-primary: #000;
+      --text-secondary: #666;
+      --border-color: #ddd;
+      --border-dark: #ccc;
+      --tab-active: #0078d4;
+      --button-primary: #0078d4;
+      --button-primary-hover: #005fa3;
+      --button-secondary: #666;
+      --button-secondary-hover: #555;
+      --error-bg: #ffe6e6;
+      --error-text: #c00;
+      --editor-bg: #fff;
+      --editor-text: #000;
+    }
+
+    body.theme-dark {
+      --bg-primary: #1e1e1e;
+      --bg-secondary: #2d2d2d;
+      --bg-tertiary: #252525;
+      --text-primary: #e0e0e0;
+      --text-secondary: #aaa;
+      --border-color: #444;
+      --border-dark: #333;
+      --tab-active: #4fc3f7;
+      --button-primary: #4fc3f7;
+      --button-primary-hover: #29b6f6;
+      --button-secondary: #555;
+      --button-secondary-hover: #666;
+      --error-bg: #5a2020;
+      --error-text: #ff6b6b;
+      --editor-bg: #1e1e1e;
+      --editor-text: #e0e0e0;
+    }
+
+    body.theme-high-contrast {
+      --bg-primary: #000;
+      --bg-secondary: #111;
+      --bg-tertiary: #111;
+      --text-primary: #fff;
+      --text-secondary: #ccc;
+      --border-color: #fff;
+      --border-dark: #fff;
+      --tab-active: #ffff00;
+      --button-primary: #ffff00;
+      --button-primary-hover: #cccc00;
+      --button-secondary: #fff;
+      --button-secondary-hover: #ffff00;
+      --error-bg: #330000;
+      --error-text: #ffff00;
+      --editor-bg: #000;
+      --editor-text: #fff;
+    }
+
+    body.theme-dracula {
+      --bg-primary: #282a36;
+      --bg-secondary: #21222c;
+      --bg-tertiary: #282a36;
+      --text-primary: #f8f8f2;
+      --text-secondary: #b0aaaa;
+      --border-color: #44475a;
+      --border-dark: #44475a;
+      --tab-active: #ff79c6;
+      --button-primary: #ff79c6;
+      --button-primary-hover: #ff6fd8;
+      --button-secondary: #44475a;
+      --button-secondary-hover: #6272a4;
+      --error-bg: #663333;
+      --error-text: #ff5555;
+      --editor-bg: #282a36;
+      --editor-text: #f8f8f2;
+    }
+
+    body.theme-nord {
+      --bg-primary: #2e3440;
+      --bg-secondary: #3b4252;
+      --bg-tertiary: #434c5e;
+      --text-primary: #eceff4;
+      --text-secondary: #d8dee9;
+      --border-color: #4c566a;
+      --border-dark: #4c566a;
+      --tab-active: #88c0d0;
+      --button-primary: #88c0d0;
+      --button-primary-hover: #81a1c1;
+      --button-secondary: #4c566a;
+      --button-secondary-hover: #5e81ac;
+      --error-bg: #3d2d2d;
+      --error-text: #bf616a;
+      --editor-bg: #2e3440;
+      --editor-text: #eceff4;
+    }
+
+    body.theme-solarized {
+      --bg-primary: #fdf6e3;
+      --bg-secondary: #eee8d5;
+      --bg-tertiary: #eee8d5;
+      --text-primary: #657b83;
+      --text-secondary: #839496;
+      --border-color: #d6d0c8;
+      --border-dark: #d6d0c8;
+      --tab-active: #268bd2;
+      --button-primary: #268bd2;
+      --button-primary-hover: #1e70d2;
+      --button-secondary: #839496;
+      --button-secondary-hover: #93a1a1;
+      --error-bg: #fde5e3;
+      --error-text: #dc322f;
+      --editor-bg: #fdf6e3;
+      --editor-text: #657b83;
+    }
+
+    body.theme-monokai {
+      --bg-primary: #272822;
+      --bg-secondary: #3e3d32;
+      --bg-tertiary: #272822;
+      --text-primary: #f8f8f2;
+      --text-secondary: #a6a6a6;
+      --border-color: #3e3d32;
+      --border-dark: #3e3d32;
+      --tab-active: #66d9ef;
+      --button-primary: #66d9ef;
+      --button-primary-hover: #5fc9e8;
+      --button-secondary: #3e3d32;
+      --button-secondary-hover: #555;
+      --error-bg: #332222;
+      --error-text: #f92672;
+      --editor-bg: #272822;
+      --editor-text: #f8f8f2;
+    }
+
+    body { background: var(--bg-primary); color: var(--text-primary); }
+    .playground-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; height: 70vh; max-width: 1200px; }
+    .editor-panel { display: flex; flex-direction: column; border: 1px solid var(--border-dark); border-radius: 4px; overflow: hidden; background: var(--bg-primary); }
+    .editor-tabs { display: flex; border-bottom: 1px solid var(--border-color); background: var(--bg-secondary); }
+    .editor-tab { padding: 0.5rem 1rem; border: none; background: transparent; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; }
+    .editor-tab.active { border-bottom-color: var(--tab-active); color: var(--tab-active); font-weight: 600; }
+    .editor-content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    textarea { flex: 1; border: none; padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.9rem; resize: none; background: var(--editor-bg); color: var(--editor-text); }
+    #preview { flex: 1; border: none; background: var(--bg-primary); }
+    .controls { display: flex; gap: 0.5rem; padding: 1rem; border-top: 1px solid var(--border-color); flex-wrap: wrap; align-items: center; }
+    .controls button { padding: 0.5rem 1rem; background: var(--button-primary); color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    .controls button:hover { background: var(--button-primary-hover); }
+    .controls button.secondary { background: var(--button-secondary); color: #fff; }
+    .controls button.secondary:hover { background: var(--button-secondary-hover); }
+    .controls select { padding: 0.4rem 0.6rem; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); border-radius: 4px; cursor: pointer; }
+    .error-message { background: var(--error-bg); color: var(--error-text); padding: 0.75rem 1rem; border-left: 3px solid var(--error-text); margin: 0; font-size: 0.9rem; }
+    .hljs { background: var(--editor-bg) !important; color: var(--editor-text) !important; padding: 1rem !important; }
+    .hljs-attr, .hljs-attribute { color: #66d9ef; }
+    .hljs-string { color: #a1efe4; }
+    .hljs-number { color: #ae81ff; }
+    @media (max-width: 900px) {
+      .playground-container { grid-template-columns: 1fr; height: auto; }
+      .editor-panel { min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="userbar" aria-live="polite"></div>
+
+  <main>
+    <h1>HTML Playground</h1>
+    <p>Write HTML, CSS, and JavaScript and see live preview. Starter code included!</p>
+
+    <div style="margin-bottom: 1rem;">
+      <label for="themeSelect">Theme:</label>
+      <select id="themeSelect" onchange="switchTheme(this.value)">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="dracula">Dracula</option>
+        <option value="nord">Nord</option>
+        <option value="solarized">Solarized Light</option>
+        <option value="monokai">Monokai</option>
+        <option value="high-contrast">High Contrast</option>
+      </select>
+    </div>
+
+    <div class="playground-container">
+      <div class="editor-panel">
+        <div class="editor-tabs">
+          <button class="editor-tab active" data-tab="html">HTML</button>
+          <button class="editor-tab" data-tab="css">CSS</button>
+          <button class="editor-tab" data-tab="js">JavaScript</button>
+        </div>
+        <div class="editor-content">
+          <textarea id="htmlCode" placeholder="Write HTML here..."></textarea>
+          <textarea id="cssCode" placeholder="Write CSS here..." hidden></textarea>
+          <textarea id="jsCode" placeholder="Write JavaScript here..." hidden></textarea>
+          <div id="errorMsg" class="error-message" hidden></div>
+        </div>
+        <div class="controls">
+          <button onclick="runCode()">▶ Run</button>
+          <button class="secondary" onclick="resetCode()">⟲ Reset</button>
+          <button class="secondary" onclick="downloadCode()">⬇ Download</button>
+          <button class="secondary" onclick="shareProject()">🔗 Share</button>
+        </div>
+      </div>
+
+      <div class="editor-panel">
+        <div style="padding: 0.75rem; border-bottom: 1px solid #ddd; background: #f5f5f5; font-size: 0.9rem; color: #666;">Preview</div>
+        <iframe id="preview" sandbox="allow-scripts" style="border: none;"></iframe>
+      </div>
+    </div>
+
+    <p style="margin-top: 1rem;"><a href="ChatServer.html" class="button">Learn to build servers</a></p>
+    <p><a href="index.html">← Back to Home</a></p>
+  </main>
+
+  <script>
+    // Reuse userbar
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>\"'`]/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;","`":"&#96;"}[c];
+      });
+    }
+
+    function renderUserBar() {
+      const container = document.getElementById('userbar');
+      if (!container) return;
+      const raw = localStorage.getItem('ccc_current_user');
+      if (raw) {
+        try {
+          const user = JSON.parse(raw);
+          const name = user && user.name ? escapeHtml(user.name) : escapeHtml(user.email || '');
+          container.innerHTML = `<div class="userbar">Welcome, <strong>${name}</strong> <a href="Profile.html" class="button">Profile</a> <button id="logoutBtn">Log out</button></div>`;
+          const btn = document.getElementById('logoutBtn');
+          if (btn) btn.addEventListener('click', function () {
+            localStorage.removeItem('ccc_current_user');
+            renderUserBar();
+          });
+          return;
+        } catch (e) { }
+      }
+      container.innerHTML = `<div class="userbar"><a href="Login.html" class="button">Log in</a> <a href="SignUp.html" class="button">Sign up</a></div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', renderUserBar);
+
+    // Theme switcher
+    function switchTheme(theme) {
+      document.body.className = theme === 'light' ? '' : `theme-${theme}`;
+      localStorage.setItem('playground_theme', theme);
+    }
+
+    function loadTheme() {
+      const saved = localStorage.getItem('playground_theme') || 'light';
+      switchTheme(saved);
+      document.getElementById('themeSelect').value = saved;
+    }
+
+    // Playground logic
+    const htmlCode = document.getElementById('htmlCode');
+    const cssCode = document.getElementById('cssCode');
+    const jsCode = document.getElementById('jsCode');
+    const preview = document.getElementById('preview');
+    const errorMsg = document.getElementById('errorMsg');
+    const tabs = document.querySelectorAll('.editor-tab');
+    const textareas = {
+      html: htmlCode,
+      css: cssCode,
+      js: jsCode
+    };
+
+    // Starter code
+    const starterCode = {
+      html: `<h1>Hello, World!</h1>
+<p>Welcome to the HTML Playground!</p>
+<button onclick="alert('Hello!')">Click me</button>`,
+      css: `h1 {
+  color: #0078d4;
+  font-size: 2rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #218838;
+}`,
+      js: `console.log('Hello from JavaScript!');`
+    };
+
+    // Load saved code or starter code
+    function loadCode() {
+      // Check URL hash for shared project
+      if (window.location.hash) {
+        try {
+          const encoded = window.location.hash.substring(1);
+          const decoded = atob(encoded);
+          const code = JSON.parse(decoded);
+          htmlCode.value = code.html || starterCode.html;
+          cssCode.value = code.css || starterCode.css;
+          jsCode.value = code.js || starterCode.js;
+          return;
+        } catch (e) {
+          // Fall through to saved/starter code
+        }
+      }
+
+      const saved = localStorage.getItem('playground_code');
+      if (saved) {
+        try {
+          const code = JSON.parse(saved);
+          htmlCode.value = code.html || starterCode.html;
+          cssCode.value = code.css || starterCode.css;
+          jsCode.value = code.js || starterCode.js;
+        } catch (e) {
+          setStarterCode();
+        }
+      } else {
+        setStarterCode();
+      }
+    }
+
+    function setStarterCode() {
+      htmlCode.value = starterCode.html;
+      cssCode.value = starterCode.css;
+      jsCode.value = starterCode.js;
+    }
+
+    // Save code to localStorage on input
+    function saveCode() {
+      const code = {
+        html: htmlCode.value,
+        css: cssCode.value,
+        js: jsCode.value
+      };
+      localStorage.setItem('playground_code', JSON.stringify(code));
+    }
+
+    htmlCode.addEventListener('input', saveCode);
+    cssCode.addEventListener('input', saveCode);
+    jsCode.addEventListener('input', saveCode);
+
+    // Syntax highlighting
+    function highlightCode() {
+      document.querySelectorAll('textarea').forEach(ta => {
+        const lang = ta.id.replace('Code', '');
+        // We'll use a simple approach: show the code with basic formatting
+        // For production, integrate CodeMirror or Monaco Editor
+      });
+    }
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function () {
+        const tabName = this.dataset.tab;
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        Object.values(textareas).forEach(ta => ta.hidden = true);
+        textareas[tabName].hidden = false;
+        textareas[tabName].focus();
+      });
+    });
+
+    // Run code
+    window.runCode = function () {
+      const html = htmlCode.value;
+      const css = cssCode.value;
+      const js = jsCode.value;
+
+      try {
+        const doc = `<!DOCTYPE html>
+<html>
+<head>
+  <style>${css}</style>
+</head>
+<body>
+  ${html}
+  <script>
+    ${js}
+  <\/script>
+</body>
+</html>`;
+
+        preview.srcdoc = doc;
+        errorMsg.hidden = true;
+      } catch (e) {
+        errorMsg.textContent = `Error: ${e.message}`;
+        errorMsg.hidden = false;
+      }
+    };
+
+    // Reset code
+    window.resetCode = function () {
+      if (confirm('Reset to starter code?')) {
+        setStarterCode();
+        saveCode();
+        runCode();
+      }
+    };
+
+    // Download code as HTML file
+    window.downloadCode = function () {
+      const html = htmlCode.value;
+      const css = cssCode.value;
+      const js = jsCode.value;
+
+      const doc = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Project</title>
+  <style>${css}</style>
+</head>
+<body>
+  ${html}
+  <script>
+    ${js}
+  <\/script>
+</body>
+</html>`;
+
+      const blob = new Blob([doc], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'project.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Share project via URL hash
+    window.shareProject = function () {
+      const code = {
+        html: htmlCode.value,
+        css: cssCode.value,
+        js: jsCode.value
+      };
+      const encoded = btoa(JSON.stringify(code));
+      const url = window.location.origin + window.location.pathname + '#' + encoded;
+      
+      // Copy to clipboard and show message
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Share link copied to clipboard!\n\n' + url.substring(0, 80) + '...');
+      }).catch(() => {
+        // Fallback: show in prompt
+        prompt('Share this link:', url);
+      });
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTheme();
+      loadCode();
+      runCode();
+    });
+  </script>
+</body>
+</html>
