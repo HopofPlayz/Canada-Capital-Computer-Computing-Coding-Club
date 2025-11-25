@@ -1,4 +1,162 @@
-layout: page
-    title: "Register"
-    permalink: /register/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sign Up — Canada Capital Computer Computing Coding Club</title>
+    <link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+    <div id="userbar" aria-live="polite"></div>
+    <main>
+        <h1>Sign Up</h1>
 
+        <form id="signupForm" class="signup-form" novalidate>
+            <div class="form-row">
+                <label for="name">Full name</label>
+                <input id="name" name="name" type="text" required placeholder="Your full name">
+            </div>
+
+            <div class="form-row">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required placeholder="you@example.com">
+            </div>
+
+            <div class="form-row">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" minlength="6" required placeholder="At least 6 characters">
+            </div>
+
+            <div class="form-row">
+                <label for="confirm">Confirm password</label>
+                <input id="confirm" name="confirm" type="password" required placeholder="Repeat your password">
+            </div>
+
+            <div class="form-row">
+                <label for="age">Age (optional)</label>
+                <input id="age" name="age" type="number" min="1" placeholder="e.g. 12">
+            </div>
+
+            <div class="form-row checkbox">
+                <label for="consent">
+                    <input id="consent" name="consent" type="checkbox" required>
+                    I agree to the club rules and that my information may be used to contact me about events.
+                </label>
+            </div>
+
+            <div class="form-row">
+                <button type="submit">Sign up</button>
+            </div>
+        </form>
+
+        <div id="message" class="success-message" aria-live="polite" hidden></div>
+
+        <p><a href="index.html">← Back to Home</a></p>
+    </main>
+
+    <script>
+        // userbar: show logged-in user or login/signup links (same logic as index.html)
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"'`]/g, function (c) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;","`":"&#96;"}[c];
+            });
+        }
+
+        function renderUserBar() {
+            const container = document.getElementById('userbar');
+            if (!container) return;
+            const raw = localStorage.getItem('ccc_current_user');
+            if (raw) {
+                try {
+                    const user = JSON.parse(raw);
+                    const name = user && user.name ? escapeHtml(user.name) : escapeHtml(user.email || '');
+                    container.innerHTML = `<div class="userbar">Welcome, <strong>${name}</strong> <button id="logoutBtn">Log out</button></div>`;
+                    const btn = document.getElementById('logoutBtn');
+                    if (btn) btn.addEventListener('click', function () {
+                        localStorage.removeItem('ccc_current_user');
+                        renderUserBar();
+                        // optionally show the sign-up form again
+                        const form = document.getElementById('signupForm'); if (form) form.style.display = '';
+                    });
+                    return;
+                } catch (e) {
+                    // fall through to signed-out state
+                }
+            }
+            container.innerHTML = `<div class="userbar"><a href="Login.html" class="button">Log in</a> <a href="SignUp.html" class="button">Sign up</a></div>`;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderUserBar);
+
+        (function () {
+            const form = document.getElementById('signupForm');
+            const message = document.getElementById('message');
+
+            function showMessage(text) {
+                message.hidden = false;
+                message.textContent = text;
+            }
+
+            async function hashString(str) {
+                // Use SubtleCrypto to compute a SHA-256 hash for demo purposes
+                try {
+                    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+                    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+                } catch (e) {
+                    // Fallback: very small and insecure fallback for environments without SubtleCrypto
+                    return btoa(str);
+                }
+            }
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                // basic client-side validation
+                const name = form.name.value.trim();
+                const email = form.email.value.trim();
+                const pwd = form.password.value;
+                const confirm = form.confirm.value;
+                const consent = form.consent.checked;
+
+                if (!name || !email || !pwd || !confirm) {
+                    showMessage('Please complete all required fields.');
+                    return;
+                }
+
+                if (pwd.length < 6) {
+                    showMessage('Password must be at least 6 characters.');
+                    return;
+                }
+
+                if (pwd !== confirm) {
+                    showMessage('Passwords do not match.');
+                    return;
+                }
+
+                if (!consent) {
+                    showMessage('You must agree to the club rules to sign up.');
+                    return;
+                }
+
+                // Simulate a successful signup (replace with real submission)
+                const safeName = name.split('\n')[0];
+
+                // Hash the password before storing (demo only - do not use this for production!)
+                const pwHash = await hashString(pwd);
+
+                // Store record with hashed password
+                try {
+                    const entrants = JSON.parse(localStorage.getItem('ccc_signups') || '[]');
+                    entrants.push({ name: safeName, email: email, pwHash: pwHash, created: new Date().toISOString() });
+                    localStorage.setItem('ccc_signups', JSON.stringify(entrants));
+                } catch (err) {
+                    // ignore storage errors
+                }
+
+                showMessage(`Thanks, ${safeName}! We'll contact you at ${email}.`);
+                form.reset();
+                form.style.display = 'none';
+            });
+        })();
+    </script>
+</body>
+</html>
