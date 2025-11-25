@@ -1,0 +1,42 @@
+body {
+  font-family: "Kedebideri", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Simple button-like link */
+.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #0078d4;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.button:hover,
+.button:focus {
+  background: #005fa3;
+}
+.success-message {
+  margin-top: 1rem;
+  padding: 0.6rem 0.8rem;
+  background: #e6ffed;
+  border: 1px solid #b3f0c6;
+  border-radius: 4px;
+}
+.signup-form { max-width: 420px; }
+.form-row { margin-bottom: 0.75rem; }
+.form-row label { display:block; margin-bottom:0.25rem; }
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="password"],
+.form-row input[type="number"] { width:100%; padding:0.45rem; box-sizing:border-box; }
+.form-row.checkbox label { display:inline-flex; align-items:center; gap:0.5rem; }
+.signup-form button { padding:0.5rem 0.9rem; background:#0078d4; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+.signup-form button:hover { background:#005fa3; }
+
+/* User status bar */
+.userbar { margin-bottom: 1rem; display:flex; gap:0.5rem; align-items:center; }
+.userbar button { background:#d9534f; color:#fff; border:none; padding:0.35rem 0.6rem; border-radius:4px; cursor:pointer; }
+.userbar button:hover { background:#c9302c; }
