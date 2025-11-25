@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat Server Tutorial — Canada Capital Computer Computing Coding Club</title>
+  <link rel="stylesheet" href="mystyle.css">
+  <style>
+    .tutorial-section { margin-bottom: 2rem; }
+    .code-block { background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 0.9rem; }
+    .tutorial-section h3 { margin-top: 1.5rem; color: #0078d4; }
+  </style>
+</head>
+<body>
+  <div id="userbar" aria-live="polite"></div>
+
+  <main>
+    <h1>Build Your Own Chat Server</h1>
+
+    <div class="tutorial-section">
+      <h2>Overview</h2>
+      <p>Learn how to build a real-time chat server using Node.js and WebSockets. We'll cover:</p>
+      <ul>
+        <li>Setting up a Node.js server</li>
+        <li>Installing dependencies (Express, Socket.IO)</li>
+        <li>Creating real-time communication with WebSockets</li>
+        <li>Broadcasting messages to multiple clients</li>
+      </ul>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>1. Install Node.js</h3>
+      <p>Download and install from <a href="https://nodejs.org/" target="_blank">nodejs.org</a>. Verify installation:</p>
+      <div class="code-block">node --version<br>npm --version</div>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>2. Create a Project Directory</h3>
+      <div class="code-block">mkdir my-chat-server<br>cd my-chat-server<br>npm init -y</div>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>3. Install Dependencies</h3>
+      <div class="code-block">npm install express socket.io</div>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>4. Create Server (server.js)</h3>
+      <div class="code-block">const express = require('express');<br>const http = require('http');<br>const socketIO = require('socket.io');<br><br>const app = express();<br>const server = http.createServer(app);<br>const io = socketIO(server, {<br>&nbsp;&nbsp;cors: { origin: '*' }<br>});<br><br>const PORT = 3000;<br><br>// Serve static files<br>app.use(express.static('public'));<br><br>// WebSocket connection<br>io.on('connection', (socket) => {<br>&nbsp;&nbsp;console.log('User connected:', socket.id);<br><br>&nbsp;&nbsp;socket.on('message', (msg) => {<br>&nbsp;&nbsp;&nbsp;&nbsp;io.emit('message', {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user: msg.user,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text: msg.text,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;timestamp: new Date()\br>&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;});<br><br>&nbsp;&nbsp;socket.on('disconnect', () => {<br>&nbsp;&nbsp;&nbsp;&nbsp;console.log('User disconnected:', socket.id);<br>&nbsp;&nbsp;});<br>});<br><br>server.listen(PORT, () => {<br>&nbsp;&nbsp;console.log(`Chat server running on http://localhost:${PORT}`);<br>});</div>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>5. Create Client (public/index.html)</h3>
+      <div class="code-block">&lt;!DOCTYPE html&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>&nbsp;&nbsp;&lt;title&gt;Chat&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&nbsp;&nbsp;&lt;div id="messages"&gt;&lt;/div&gt;<br>&nbsp;&nbsp;&lt;input id="input" type="text" placeholder="Message..." /&gt;<br>&nbsp;&nbsp;&lt;button id="send"&gt;Send&lt;/button&gt;<br><br>&nbsp;&nbsp;&lt;script src="https://cdn.socket.io/4.5.4/socket.io.min.js"&gt;&lt;/script&gt;<br>&nbsp;&nbsp;&lt;script&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;const socket = io();<br>&nbsp;&nbsp;&nbsp;&nbsp;const messagesDiv = document.getElementById('messages');<br>&nbsp;&nbsp;&nbsp;&nbsp;const input = document.getElementById('input');<br>&nbsp;&nbsp;&nbsp;&nbsp;const sendBtn = document.getElementById('send');<br><br>&nbsp;&nbsp;&nbsp;&nbsp;sendBtn.onclick = () => {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;socket.emit('message', {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user: 'User',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text: input.value<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;input.value = '';<br>&nbsp;&nbsp;&nbsp;&nbsp;};<br><br>&nbsp;&nbsp;&nbsp;&nbsp;socket.on('message', (msg) => {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const p = document.createElement('p');<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;p.textContent = `${msg.user}: ${msg.text}`;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messagesDiv.appendChild(p);<br>&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;&lt;/script&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;</div>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>6. Run Your Server</h3>
+      <div class="code-block">node server.js</div>
+      <p>Open <code>http://localhost:3000</code> in your browser. Open multiple tabs and chat!</p>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>7. Next Steps</h3>
+      <ul>
+        <li><strong>Persist messages:</strong> Add a database (MongoDB, PostgreSQL) to save chat history.</li>
+        <li><strong>User authentication:</strong> Integrate login/signup with your chat.</li>
+        <li><strong>Rooms:</strong> Create separate chat rooms with Socket.IO namespaces.</li>
+        <li><strong>Deploy:</strong> Host on Heroku, AWS, or DigitalOcean for production use.</li>
+      </ul>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>Resources</h3>
+      <ul>
+        <li><a href="https://socket.io/" target="_blank">Socket.IO Docs</a></li>
+        <li><a href="https://expressjs.com/" target="_blank">Express.js Docs</a></li>
+        <li><a href="https://nodejs.org/" target="_blank">Node.js Docs</a></li>
+      </ul>
+    </div>
+
+    <p style="margin-top: 2rem;"><a href="Chat.html" class="button">← Back to Chat</a> · <a href="index.html" class="button">Home</a></p>
+  </main>
+
+  <script>
+    // Reuse userbar
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>\"'`]/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;","`":"&#96;"}[c];
+      });
+    }
+
+    function renderUserBar() {
+      const container = document.getElementById('userbar');
+      if (!container) return;
+      const raw = localStorage.getItem('ccc_current_user');
+      if (raw) {
+        try {
+          const user = JSON.parse(raw);
+          const name = user && user.name ? escapeHtml(user.name) : escapeHtml(user.email || '');
+          container.innerHTML = `<div class="userbar">Welcome, <strong>${name}</strong> <a href="Profile.html" class="button">Profile</a> <button id="logoutBtn">Log out</button></div>`;
+          const btn = document.getElementById('logoutBtn');
+          if (btn) btn.addEventListener('click', function () {
+            localStorage.removeItem('ccc_current_user');
+            renderUserBar();
+          });
+          return;
+        } catch (e) { }
+      }
+      container.innerHTML = `<div class="userbar"><a href="Login.html" class="button">Log in</a> <a href="SignUp.html" class="button">Sign up</a></div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', renderUserBar);
+  </script>
+</body>
+</html>
