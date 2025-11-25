@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canada Capital Computer Computing Coding Club</title>
+
+    <link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+    
+    <div id="userbar" aria-live="polite"></div>
+
+    <h1><a href="https://hopofplayz.github.io/Canada-Capital-Computer-Computing-Coding-Club/">Canada Capital Computer Computing Coding Club</a></h1>
+    The CCCCCC is open to kids and adults of all ages and experience levels, and it's completely free and AI-powered.
+    <p><br />
+    <!-- Use a real link so navigation works even if JavaScript is disabled -->
+    <a href="SignUp.html" class="button">Join today!</a> <a href="Playground.html" class="button">Code Playground</a> <a href="Chat.html" class="button">Chat</a> <a href="ChatServer.html" class="button">Learn Chat Servers</a></p>
+
+    <script>
+        function goToDiffPage(page) {
+            window.location.href = page;
+        }
+
+        // Render user status in the top of the page using localStorage 'ccc_current_user'
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"'`]/g, function (c) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;","`":"&#96;"}[c];
+            });
+        }
+
+        function renderUserBar() {
+            const container = document.getElementById('userbar');
+            if (!container) return;
+            const raw = localStorage.getItem('ccc_current_user');
+            if (raw) {
+                try {
+                    const user = JSON.parse(raw);
+                    const name = user && user.name ? escapeHtml(user.name) : escapeHtml(user.email || '');
+                    container.innerHTML = `<div class="userbar">Welcome, <strong>${name}</strong> <a href="Profile.html" class="button">Profile</a> <button id="logoutBtn">Log out</button></div>`;
+                    const btn = document.getElementById('logoutBtn');
+                    if (btn) btn.addEventListener('click', function () {
+                        localStorage.removeItem('ccc_current_user');
+                        renderUserBar();
+                    });
+                    return;
+                } catch (e) {
+                    // fall through to signed-out state
+                }
+            }
+            // Signed-out state: offer login/signup links (styled as buttons)
+            container.innerHTML = `<div class="userbar"><a href="Login.html" class="button">Log in</a> <a href="SignUp.html" class="button">Sign up</a></div>`;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderUserBar);
+    </script>
+</body>
+</html>
