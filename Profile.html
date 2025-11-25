@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Profile — Canada Capital Computer Computing Coding Club</title>
+  <link rel="stylesheet" href="mystyle.css">
+</head>
+<body>
+  <div id="userbar" aria-live="polite"></div>
+
+  <main>
+    <h1>My Profile</h1>
+
+    <div id="notSignedIn" hidden>
+      <p>You are not signed in. <a href="Login.html">Log in</a> or <a href="SignUp.html">Create an account</a>.</p>
+    </div>
+
+    <form id="profileForm" class="signup-form" hidden>
+      <div class="form-row">
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" required placeholder="Your full name">
+      </div>
+
+      <div class="form-row">
+        <label for="email">Email (readonly)</label>
+        <input id="email" name="email" type="email" readonly>
+      </div>
+
+      <fieldset style="margin-top:1rem;">
+        <legend>Change password</legend>
+        <div class="form-row">
+          <label for="currentPwd">Current password</label>
+          <input id="currentPwd" name="currentPwd" type="password" placeholder="Current password">
+        </div>
+        <div class="form-row">
+          <label for="newPwd">New password</label>
+          <input id="newPwd" name="newPwd" type="password" minlength="6" placeholder="New password (optional)">
+        </div>
+        <div class="form-row">
+          <label for="confirmPwd">Confirm new password</label>
+          <input id="confirmPwd" name="confirmPwd" type="password" placeholder="Confirm new password">
+        </div>
+      </fieldset>
+
+      <div class="form-row">
+        <button id="saveBtn" type="button">Save changes</button>
+        <button id="deleteBtn" type="button" style="margin-left:0.5rem;background:#c0392b;">Delete account</button>
+      </div>
+    </form>
+
+    <div id="message" class="success-message" aria-live="polite" hidden></div>
+
+    <p><a href="index.html">← Back to Home</a></p>
+  </main>
+
+  <script>
+    // Reuse userbar rendering used on other pages
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>\"'`]/g, function (c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;","`":"&#96;"}[c];
+      });
+    }
+
+    function renderUserBar() {
+      const container = document.getElementById('userbar');
+      if (!container) return;
+      const raw = localStorage.getItem('ccc_current_user');
+      if (raw) {
+        try {
+          const user = JSON.parse(raw);
+          const name = user && user.name ? escapeHtml(user.name) : escapeHtml(user.email || '');
+          container.innerHTML = `<div class="userbar">Welcome, <strong>${name}</strong> <a href="Profile.html" class="button">Profile</a> <button id="logoutBtn">Log out</button></div>`;
+          const btn = document.getElementById('logoutBtn');
+          if (btn) btn.addEventListener('click', function () {
+            localStorage.removeItem('ccc_current_user');
+            renderUserBar();
+            // show not-signed-in state on profile page
+            showNotSignedIn();
+          });
+          return;
+        } catch (e) {
+          // fall through
+        }
+      }
+      container.innerHTML = `<div class="userbar"><a href="Login.html" class="button">Log in</a> <a href="SignUp.html" class="button">Sign up</a></div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', renderUserBar);
+
+    // Profile page logic
+    (function () {
+      const form = document.getElementById('profileForm');
+      const msg = document.getElementById('message');
+      const notSignedIn = document.getElementById('notSignedIn');
+
+      function showMessage(text, isError) {
+        msg.hidden = false;
+        msg.textContent = text;
+        if (isError) msg.style.background = '#ffe6e6'; else msg.style.background = '';
+      }
+
+      function showNotSignedIn() {
+        form.hidden = true;
+        notSignedIn.hidden = false;
+      }
+
+      async function hashString(str) {
+        try {
+          const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch (e) {
+          return btoa(str);
+        }
+      }
+
+      function findAccount(email) {
+        try {
+          const entrants = JSON.parse(localStorage.getItem('ccc_signups') || '[]');
+          const idx = entrants.findIndex(r => r.email && r.email.toLowerCase() === email.toLowerCase());
+          return { entrants, idx };
+        } catch (e) {
+          return { entrants: [], idx: -1 };
+        }
+      }
+
+      async function init() {
+        const raw = localStorage.getItem('ccc_current_user');
+        if (!raw) {
+          showNotSignedIn();
+          return;
+        }
+        let user;
+        try { user = JSON.parse(raw); } catch (e) { showNotSignedIn(); return; }
+        const email = user.email;
+        if (!email) { showNotSignedIn(); return; }
+
+        // populate form from stored record (if any)
+        const { entrants, idx } = findAccount(email);
+        if (idx === -1) {
+          // account not found but current_user exists; let user update name/email locally but don't allow password change
+          document.getElementById('name').value = user.name || '';
+          document.getElementById('email').value = email;
+          form.hidden = false;
+          return;
+        }
+
+        const acct = entrants[idx];
+        document.getElementById('name').value = acct.name || '';
+        document.getElementById('email').value = acct.email || '';
+        form.hidden = false;
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', async function () {
+        const raw = localStorage.getItem('ccc_current_user');
+        if (!raw) { showMessage('Not signed in', true); return; }
+        const current = JSON.parse(raw);
+        const email = current.email;
+        if (!email) { showMessage('Missing email', true); return; }
+
+        const name = document.getElementById('name').value.trim();
+        const currentPwd = document.getElementById('currentPwd').value;
+        const newPwd = document.getElementById('newPwd').value;
+        const confirmPwd = document.getElementById('confirmPwd').value;
+
+        const { entrants, idx } = findAccount(email);
+        if (idx === -1) {
+          showMessage('Account record not found.', true);
+          return;
+        }
+
+        // If changing password, verify current and match new
+        if (newPwd) {
+          if (!currentPwd) { showMessage('Enter current password to change password.', true); return; }
+          if (newPwd !== confirmPwd) { showMessage('New passwords do not match.', true); return; }
+          const curHash = await hashString(currentPwd);
+          if (entrants[idx].pwHash !== curHash) { showMessage('Current password is incorrect.', true); return; }
+          const newHash = await hashString(newPwd);
+          entrants[idx].pwHash = newHash;
+        }
+
+        // Update name
+        entrants[idx].name = name;
+
+        try {
+          localStorage.setItem('ccc_signups', JSON.stringify(entrants));
+          // update current_user name as well
+          localStorage.setItem('ccc_current_user', JSON.stringify({ email: entrants[idx].email, name: entrants[idx].name }));
+          renderUserBar();
+          showMessage('Profile updated.');
+          // clear password fields
+          document.getElementById('currentPwd').value = '';
+          document.getElementById('newPwd').value = '';
+          document.getElementById('confirmPwd').value = '';
+        } catch (e) {
+          showMessage('Failed to save changes.', true);
+        }
+      });
+
+      document.getElementById('deleteBtn').addEventListener('click', function () {
+        if (!confirm('Delete your account? This cannot be undone.')) return;
+        const raw = localStorage.getItem('ccc_current_user');
+        if (!raw) { showMessage('Not signed in', true); return; }
+        const current = JSON.parse(raw);
+        const email = current.email;
+        const { entrants, idx } = findAccount(email);
+        if (idx === -1) { showMessage('Account not found', true); return; }
+        entrants.splice(idx, 1);
+        try {
+          localStorage.setItem('ccc_signups', JSON.stringify(entrants));
+          localStorage.removeItem('ccc_current_user');
+          showMessage('Account deleted. Redirecting to home...');
+          renderUserBar();
+          setTimeout(() => { window.location.href = 'index.html'; }, 1100);
+        } catch (e) {
+          showMessage('Failed to delete account.', true);
+        }
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>
