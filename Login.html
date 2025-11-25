@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login — Canada Capital Computer Computing Coding Club</title>
+    <link rel="stylesheet" href="mystyle.css">
+    <style>
+        /* Small override so login form looks consistent */
+        main { padding-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="userbar" aria-live="polite"></div>
+    <main>
+        <h1>Login</h1>
+
+        <form id="loginForm" class="signup-form" novalidate>
+            <div class="form-row">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required placeholder="you@example.com">
+            </div>
+
+            <div class="form-row">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" required placeholder="Your password">
+            </div>
+
+            <div class="form-row">
+                <button type="submit">Log in</button>
+            </div>
+        </form>
+
+        <div id="message" class="success-message" aria-live="polite" hidden></div>
+
+        <p><a href="index.html">← Back to Home</a> · <a href="SignUp.html">Create account</a></p>
+    </main>
+
+    <script>
+        // userbar: show logged-in user or login/signup links
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"'`]/g, function (c) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;","`":"&#96;"}[c];
+            });
+        }
+
+        function renderUserBar() {
+            const container = document.getElementById('userbar');
+            if (!container) return;
+            const raw = localStorage.getItem('ccc_current_user');
+            if (raw) {
+                try {
+                    const user = JSON.parse(raw);
+                    const name = user && user.name ? escapeHtml(user.name) : escapeHtml(user.email || '');
+                    container.innerHTML = `<div class="userbar">Welcome, <strong>${name}</strong> <button id="logoutBtn">Log out</button></div>`;
+                    const btn = document.getElementById('logoutBtn');
+                    if (btn) btn.addEventListener('click', function () {
+                        localStorage.removeItem('ccc_current_user');
+                        renderUserBar();
+                        const form = document.getElementById('loginForm'); if (form) form.style.display = '';
+                    });
+                    return;
+                } catch (e) {
+                    // fall through
+                }
+            }
+            container.innerHTML = `<div class="userbar"><a href="Login.html" class="button">Log in</a> <a href="SignUp.html" class="button">Sign up</a></div>`;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderUserBar);
+
+        (function () {
+            const form = document.getElementById('loginForm');
+            const message = document.getElementById('message');
+
+            function showMessage(text) {
+                message.hidden = false;
+                message.textContent = text;
+            }
+
+            async function hashString(str) {
+                try {
+                    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+                    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+                } catch (e) {
+                    return btoa(str);
+                }
+            }
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const email = form.email.value.trim();
+                const pwd = form.password.value;
+
+                if (!email || !pwd) {
+                    showMessage('Please enter email and password.');
+                    return;
+                }
+
+                const pwHash = await hashString(pwd);
+
+                try {
+                    const entrants = JSON.parse(localStorage.getItem('ccc_signups') || '[]');
+                    const match = entrants.find(r => r.email.toLowerCase() === email.toLowerCase() && r.pwHash === pwHash);
+                    if (match) {
+                        // Demo login: store current user
+                        localStorage.setItem('ccc_current_user', JSON.stringify({ email: match.email, name: match.name }));
+                        showMessage(`Welcome back, ${match.name}!`);
+                        form.reset();
+                        form.style.display = 'none';
+                        renderUserBar();
+                        return;
+                    }
+                } catch (err) {
+                    // ignore
+                }
+
+                showMessage('Invalid email or password.');
+            });
+        })();
+    </script>
+</body>
+</html>
