@@ -1,7 +1,7 @@
 # Canada Capital Computer Computing Coding Club
 
 A free, open-source website for the Computer Computing Coding Club featuring sign-up, authentication, chat, coding playground, and more.
-<img src="path/to/image.png" alt="Alt text">. 
+<img src="cccccclogo.png" alt="Alt text">. 
 ## Features
 
 - ✅ **User Authentication** — Sign up, log in, and manage profiles with password hashing
